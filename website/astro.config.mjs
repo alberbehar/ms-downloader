@@ -4,8 +4,11 @@ import tailwindcss from '@tailwindcss/vite';
 
 import cloudflare from "@astrojs/cloudflare";
 
+const isGhPages = process.env.GITHUB_PAGES === 'true';
+
 export default defineConfig({
-  site: 'https://ms-downloader.example.com',
+  site: isGhPages ? 'https://alberbehar.github.io' : 'https://ms-downloader.example.com',
+  base: isGhPages ? '/ms-downloader' : '/',
   integrations: [sitemap()],
 
   vite: {
@@ -17,5 +20,5 @@ export default defineConfig({
   },
 
   compressHTML: true,
-  adapter: cloudflare()
+  ...(isGhPages ? {} : { adapter: cloudflare() }),
 });
