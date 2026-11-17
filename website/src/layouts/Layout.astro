@@ -1,0 +1,144 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  pathname?: string;
+}
+
+const {
+  title = 'MS Downloader — download Teams recordings, SharePoint MP4s, and meeting transcripts',
+  description = 'Chrome extension that downloads Microsoft Teams meeting recordings, SharePoint MP4s, and meeting transcripts straight from your browser — even when the Download button is greyed out, missing, or disabled by IT policy. Free, open source, MIT.',
+  pathname = '/',
+} = Astro.props;
+
+const canonical = new URL(pathname, Astro.site).toString();
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/og.png', Astro.site).toString()} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL('/og.png', Astro.site).toString()} />
+
+    <!-- Theme color reacts to OS preference -->
+    <meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f1e6" media="(prefers-color-scheme: light)" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,300..700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'MS Downloader',
+      applicationCategory: 'BrowserApplication',
+      operatingSystem: 'Chrome, Edge',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      url: canonical,
+      description,
+      
+      license: 'https://opensource.org/licenses/MIT',
+    })} />
+  </head>
+  <body>
+    <slot />
+
+    <!--
+      GitHub star-count hydration. The page is statically prerendered, so the
+      server-side `getRepoStats()` call freezes the count at build time. This
+      tiny client-side script refreshes both badges on load and caches the
+      result in sessionStorage for ~1h so we don't get rate-limited (60/hr/IP
+      on unauthenticated GitHub API).
+    -->
+    <script is:inline>
+      (function () {
+        var REPO = 'alberbehar/ms-downloader';
+        var CACHE_KEY = 'gh-stars:' + REPO;
+        var TTL_MS = 60 * 60 * 1000;
+
+        function fmt(n) {
+          if (n < 1000) return String(n);
+          return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        }
+
+        function applyCount(n) {
+          if (typeof n !== 'number' || isNaN(n)) return;
+          var formatted = fmt(n);
+          document.querySelectorAll('[data-gh-stars-count]').forEach(function (el) {
+            el.textContent = formatted;
+          });
+          document.querySelectorAll('[data-gh-stars-badge]').forEach(function (el) {
+            if (n > 0) el.removeAttribute('hidden');
+            else el.setAttribute('hidden', '');
+            if (el.hasAttribute('aria-label')) el.setAttribute('aria-label', n + ' stars');
+          });
+          document.querySelectorAll('[data-gh-stars-sep]').forEach(function (el) {
+            if (n > 0) el.removeAttribute('hidden');
+            else el.setAttribute('hidden', '');
+          });
+          document.querySelectorAll('[data-gh-link]').forEach(function (el) {
+            el.setAttribute('aria-label', n > 0 ? 'View on GitHub — ' + n + ' stars' : 'View on GitHub');
+          });
+        }
+
+        function fetchAndCache() {
+          fetch('https://api.github.com/repos/' + REPO, {
+            headers: { Accept: 'application/vnd.github+json' },
+          })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              if (!d || typeof d.stargazers_count !== 'number') return;
+              try {
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                  count: d.stargazers_count,
+                  ts: Date.now(),
+                }));
+              } catch (_) {}
+              applyCount(d.stargazers_count);
+            })
+            .catch(function () { /* silent — leave build-time value */ });
+        }
+
+        try {
+          var raw = sessionStorage.getItem(CACHE_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && Date.now() - parsed.ts < TTL_MS) {
+              applyCount(parsed.count);
+              return;
+            }
+          }
+        } catch (_) {}
+
+        fetchAndCache();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "MS Downloader",
+  "short_name": "MS Downloader",
+  "version": "1.7.1",
+  "description": "Download MS Teams meeting videos and transcripts. Multiple formats (JSON, VTT, Grouped). In-browser.",
+  "homepage_url": "https://github.com/alberbehar/ms-downloader",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.sharepoint.com/*",
+    "https://*.sharepoint.com.mcas.ms/*",
+    "https://*.svc.ms/*",
+    "https://teams.microsoft.com/*",
+    "https://teams.cloud.microsoft/*",
+    "https://teams.microsoft.com.mcas.ms/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.sharepoint.com/*",
+        "https://*.sharepoint.com.mcas.ms/*",
+        "https://teams.microsoft.com/*",
+        "https://teams.cloud.microsoft/*",
+        "https://teams.microsoft.com.mcas.ms/*"
+      ],
+      "js": ["intercept.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://*.sharepoint.com/*",
+        "https://*.sharepoint.com.mcas.ms/*",
+        "https://teams.microsoft.com/*",
+        "https://teams.cloud.microsoft/*",
+        "https://teams.microsoft.com.mcas.ms/*"
+      ],
+      "js": ["content.js"],
+      "css": ["modal.css"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "128": "icons/icon128.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["intercept.js", "mux-worker.js"],
+      "matches": [
+        "https://*.sharepoint.com/*",
+        "https://*.sharepoint.com.mcas.ms/*",
+        "https://teams.microsoft.com/*",
+        "https://teams.cloud.microsoft/*",
+        "https://teams.microsoft.com.mcas.ms/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1014 @@
+/* ============================================================================
+   Theme tokens — single source of truth for both modes.
+   Dark mode overrides at the bottom via @media (prefers-color-scheme: dark).
+   ============================================================================ */
+:root {
+  /* Surfaces */
+  --ttd-bg:                  #ffffff;
+  --ttd-bg-elevated:         #f8f9fa;
+  --ttd-bg-input:            #ffffff;
+  --ttd-bg-backdrop:         rgba(0, 0, 0, 0.7);
+  --ttd-bg-backdrop-warning: rgba(0, 0, 0, 0.78);
+  --ttd-bg-sample:           #f5f5f5;
+  --ttd-bg-cancel:           #f0f0f0;
+  --ttd-bg-cancel-hover:     #e0e0e0;
+  --ttd-bg-format-hover:     #f8f9ff;
+  --ttd-bg-format-selected:  #f0f3ff;
+  --ttd-bg-video-hover:      #fef5f5;
+  --ttd-bg-video-selected:   #fef0f0;
+  --ttd-bg-tab:              #f5f5f5;
+  --ttd-bg-tab-hover:        #eeeeee;
+  --ttd-bg-progress-track:   #e0e0e0;
+  --ttd-bg-filename-error:   #fff0f0;
+  --ttd-bg-star-hover:       #f6f6f6;
+  --ttd-bg-info-warning:     #fff8e1;
+  --ttd-bg-command-code:     #1e1e1e;
+
+  /* Text */
+  --ttd-text:                #333333;
+  --ttd-text-strong:         #000000;
+  --ttd-text-muted:          #666666;
+  --ttd-text-dim:            #999999;
+  --ttd-text-placeholder:    #aaaaaa;
+  --ttd-text-status:         #555555;
+  --ttd-text-info-warning:   #5d4037;
+  --ttd-text-info-warn-str:  #e65100;
+  --ttd-text-command-code:   #d4d4d4;
+
+  /* Borders */
+  --ttd-border:              #eeeeee;
+  --ttd-border-strong:       #dddddd;
+  --ttd-border-info-warning: #ffe082;
+  --ttd-border-info-accent:  #ffa000;
+
+  /* Brand accents */
+  --ttd-accent:              #667eea;
+  --ttd-accent-text:         #667eea;
+  --ttd-accent-grad-start:   #667eea;
+  --ttd-accent-grad-end:     #764ba2;
+  --ttd-accent-shadow-tint:  rgba(102, 126, 234, 0.2);
+  --ttd-accent-active-tint:  rgba(102, 126, 234, 0.4);
+
+  /* Danger / video accent */
+  --ttd-danger:              #e74c3c;
+  --ttd-danger-strong:       #c0392b;
+  --ttd-danger-darker:       #a93225;
+  --ttd-danger-tint:         rgba(231, 76, 60, 0.2);
+
+  /* Success / browser download accent */
+  --ttd-success-grad-start:  #27ae60;
+  --ttd-success-grad-end:    #1e8449;
+
+  /* Warning amber (no-transcript dialog) */
+  --ttd-warn-amber:          #d68910;
+  --ttd-warn-amber-strong:   #b9770e;
+
+  /* Shadows */
+  --ttd-shadow-modal:        0 10px 40px rgba(0, 0, 0, 0.3);
+  --ttd-shadow-overlay:      0 18px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Format Selection Modal Styles */
+#formatSelectionModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--ttd-bg-backdrop);
+  z-index: 999999;
+  justify-content: center;
+  align-items: center;
+}
+
+#formatSelectionModal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--ttd-bg);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 1200px;
+  width: 95%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--ttd-shadow-modal);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--ttd-border);
+  padding-bottom: 12px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--ttd-text);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--ttd-text-dim);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+}
+
+.modal-close:hover {
+  color: var(--ttd-text);
+}
+
+.format-options-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .format-options-container {
+    flex-direction: column;
+  }
+}
+
+.format-option {
+  flex: 1;
+  min-width: 0;
+  border: 2px solid var(--ttd-border-strong);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.format-option:hover {
+  border-color: var(--ttd-accent);
+  background: var(--ttd-bg-format-hover);
+}
+
+.format-option.selected {
+  border-color: var(--ttd-accent);
+  background: var(--ttd-bg-format-selected);
+  box-shadow: 0 0 0 2px var(--ttd-accent-shadow-tint);
+}
+
+.format-option h3 {
+  margin: 0 0 8px 0;
+  color: var(--ttd-accent-text);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.format-badge {
+  font-size: 11px;
+  background: var(--ttd-accent);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: normal;
+}
+
+.format-option p {
+  margin: 0 0 12px 0;
+  color: var(--ttd-text-muted);
+  font-size: 13px;
+  flex-grow: 1;
+}
+
+/* Per-format option switch, e.g. "Timestamps" on Grouped VTT.
+   Sits right above the preview so the effect of toggling it is visible at once. */
+.format-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--ttd-text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.format-toggle input {
+  appearance: none;
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 16px;
+  margin: 0;
+  border-radius: 8px;
+  background: var(--ttd-border-strong);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.format-toggle input::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.format-toggle input:checked {
+  background: var(--ttd-accent);
+}
+
+.format-toggle input:checked::after {
+  transform: translateX(12px);
+}
+
+.format-toggle input:focus-visible {
+  outline: 2px solid var(--ttd-accent);
+  outline-offset: 2px;
+}
+
+.format-toggle:has(input:checked) {
+  color: var(--ttd-text);
+}
+
+.format-sample {
+  background: var(--ttd-bg-sample);
+  border-radius: 4px;
+  padding: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--ttd-text);
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ttd-border);
+}
+
+.modal-actions-buttons {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.modal-star-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.modal-star-link:hover {
+  background: var(--ttd-bg-star-hover);
+  transform: translateY(-1px);
+}
+
+.modal-star-link .star-badge {
+  display: block;
+  height: 20px;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-button-cancel {
+  background: var(--ttd-bg-cancel);
+  color: var(--ttd-text-muted);
+}
+
+.modal-button-cancel:hover {
+  background: var(--ttd-bg-cancel-hover);
+}
+
+.modal-button-download {
+  background: linear-gradient(135deg, var(--ttd-accent-grad-start) 0%, var(--ttd-accent-grad-end) 100%);
+  color: white;
+}
+
+.modal-button-download:hover {
+  background: linear-gradient(135deg, var(--ttd-accent-grad-end) 0%, var(--ttd-accent-grad-start) 100%);
+}
+
+.format-badge {
+  display: inline-block;
+  background: var(--ttd-accent);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+/* Filename Section Styles */
+.filename-section {
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--ttd-bg-elevated);
+  border-radius: 8px;
+  border: 1px solid var(--ttd-border-strong);
+}
+
+.filename-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--ttd-text);
+}
+
+.label-text {
+  font-size: 14px;
+}
+
+.auto-detected {
+  font-size: 12px;
+  color: var(--ttd-text-dim);
+  font-weight: normal;
+  font-style: italic;
+}
+
+.filename-input-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ttd-bg-input);
+  border: 2px solid var(--ttd-border-strong);
+  border-radius: 6px;
+  padding: 2px 8px;
+  transition: border-color 0.2s ease;
+}
+
+.filename-input-container:focus-within {
+  border-color: var(--ttd-accent);
+}
+
+.filename-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 10px 8px;
+  font-size: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--ttd-text);
+  background: transparent;
+}
+
+.filename-input.error {
+  background: var(--ttd-bg-filename-error);
+}
+
+.filename-input::placeholder {
+  color: var(--ttd-text-placeholder);
+}
+
+.filename-suffix,
+.filename-extension {
+  color: var(--ttd-text-dim);
+  font-size: 14px;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.filename-extension {
+  user-select: none;
+}
+
+/* The suffix is an editable input styled to read as static text so the row still looks like one filename
+   The dashed underline on hover/focus is the only hint that it can be typed into. */
+.filename-suffix {
+  flex: 0 0 auto;
+  border: none;
+  border-bottom: 1px dashed transparent;
+  outline: none;
+  padding: 0;
+  background: transparent;
+  cursor: text;
+  transition: border-bottom-color 0.2s ease, color 0.2s ease;
+}
+
+.filename-suffix:hover,
+.filename-suffix:focus {
+  color: var(--ttd-text);
+  border-bottom-color: var(--ttd-text-dim);
+}
+
+.filename-suffix-reset {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ttd-text-dim);
+  font-size: 14px;
+  line-height: 1;
+  padding: 3px 5px;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.filename-suffix-reset:hover {
+  color: var(--ttd-accent);
+  background: var(--ttd-bg-elevated);
+}
+
+/* Explicit bcz the class above sets a display-affecting box model
+   The [hidden] attribute alone would lose to it */
+.filename-suffix-reset[hidden] {
+  display: none;
+}
+
+.filename-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ttd-text-muted);
+}
+
+/* ============================================================================
+   Video Download Modal Styles
+   ============================================================================ */
+
+#videoDownloadModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--ttd-bg-backdrop);
+  z-index: 999999;
+  justify-content: center;
+  align-items: center;
+}
+
+#videoDownloadModal.show {
+  display: flex;
+}
+
+.video-modal-content {
+  max-width: 800px;
+}
+
+.video-info-warning {
+  background: var(--ttd-bg-info-warning);
+  border: 1px solid var(--ttd-border-info-warning);
+  border-left: 4px solid var(--ttd-border-info-accent);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--ttd-text-info-warning);
+  line-height: 1.5;
+}
+
+.video-parallel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+  font-size: 13px;
+  color: var(--ttd-text-dim);
+  flex-wrap: wrap;
+}
+
+.video-parallel-label {
+  color: var(--ttd-text);
+  font-weight: 600;
+}
+
+.video-parallel-select {
+  padding: 4px 8px;
+  border: 1px solid var(--ttd-border-strong);
+  border-radius: 4px;
+  background: var(--ttd-bg-input);
+  color: var(--ttd-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.video-parallel-hint {
+  font-size: 12px;
+  color: var(--ttd-text-dim);
+  font-style: italic;
+}
+
+.video-info-warning strong {
+  color: var(--ttd-text-info-warn-str);
+}
+
+/* Video modal's footer Download button: same shape as the transcript modal's,
+   in the red of the Download Video button. While a download runs it turns into
+   a plain "Cancel Download" button. */
+.video-download-btn {
+  background: linear-gradient(135deg, var(--ttd-danger) 0%, var(--ttd-danger-strong) 100%);
+}
+
+.video-download-btn:hover {
+  background: linear-gradient(135deg, var(--ttd-danger-strong) 0%, var(--ttd-danger) 100%);
+}
+
+.video-download-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.video-download-btn.browser-dl-cancelling {
+  background: var(--ttd-bg-cancel);
+  color: var(--ttd-text-muted);
+}
+
+.video-download-btn.browser-dl-cancelling:hover {
+  background: var(--ttd-bg-cancel-hover);
+}
+
+.video-format-cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.video-format-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--ttd-border-strong);
+  border-radius: 8px;
+  padding: 12px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1 1 0;
+  min-width: 100px;
+  text-align: center;
+}
+
+.video-format-card:hover {
+  border-color: var(--ttd-danger);
+  background: var(--ttd-bg-video-hover);
+}
+
+.video-format-card.selected {
+  border-color: var(--ttd-danger);
+  background: var(--ttd-bg-video-selected);
+  box-shadow: 0 0 0 2px var(--ttd-danger-tint);
+}
+
+.video-format-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.video-format-info {
+  min-width: 0;
+}
+
+.video-format-info h3 {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ttd-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.video-format-card .format-badge {
+  background: var(--ttd-danger) !important;
+}
+
+/* "Add subtitles from the transcript" — same switch as the transcript modal,
+   in the video modal's red */
+.video-subtitles-toggle {
+  flex-wrap: wrap;
+  margin: 0 0 4px;
+}
+
+.video-subtitles-toggle input:checked {
+  background: var(--ttd-danger);
+}
+
+.video-subtitles-toggle input:focus-visible {
+  outline-color: var(--ttd-danger);
+}
+
+.video-subtitles-toggle:has(input:disabled) {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.video-subtitles-toggle input:disabled {
+  cursor: default;
+}
+
+.video-subtitles-hint {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ttd-text-dim);
+}
+
+@media (max-width: 768px) {
+  .video-modal-content {
+    max-width: 95%;
+  }
+  .video-format-cards {
+    flex-wrap: wrap;
+  }
+  .video-format-card {
+    min-width: 80px;
+  }
+}
+
+
+.browser-download-section {
+  margin-bottom: 12px;
+}
+
+.browser-dl-progress-bar-wrap {
+  height: 8px;
+  background: var(--ttd-bg-progress-track);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.browser-dl-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ttd-success-grad-start), #2ecc71);
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.browser-dl-progress-bar.browser-dl-complete {
+  background: linear-gradient(90deg, var(--ttd-success-grad-end), var(--ttd-success-grad-start));
+}
+
+.browser-dl-progress-bar.browser-dl-error {
+  background: linear-gradient(90deg, var(--ttd-danger), var(--ttd-danger-strong));
+}
+
+.browser-dl-status {
+  font-size: 12px;
+  color: var(--ttd-text-status);
+  min-height: 18px;
+}
+
+/* ============================================================================
+   Command-bar Download menu
+   The button borrows a native command button's classes for its font, colour
+   and hover; these rules only lay out its icon, label and chevron. The menu
+   follows the page's light/dark theme via data-ttd-theme, not the OS one.
+   ============================================================================ */
+#customDownloadMenu {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#customDownloadMenu .ttd-cmd-icon,
+#customDownloadMenu .ttd-cmd-chevron {
+  display: inline-flex;
+}
+
+#customDownloadMenu .ttd-cmd-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: #5b5fc7;
+  stroke: none;
+}
+
+#customDownloadMenu[data-ttd-theme="dark"] .ttd-cmd-icon svg {
+  fill: #9ea2ff;
+}
+
+#customDownloadMenu .ttd-cmd-chevron svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+/* Only used when the command bar had no native button to copy */
+#customDownloadMenu.ttd-cmd-fallback {
+  height: 32px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#customDownloadMenu.ttd-cmd-fallback:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+#ttdDownloadMenu {
+  --ttd-menu-bg:     #ffffff;
+  --ttd-menu-text:   #242424;
+  --ttd-menu-dim:    #707070;
+  --ttd-menu-hover:  #f5f5f5;
+  --ttd-menu-border: #e0e0e0;
+  --ttd-menu-icon:   #5b5fc7;
+  position: fixed;
+  z-index: 999998;
+  min-width: 250px;
+  padding: 4px 0;
+  border-radius: 6px;
+  background: var(--ttd-menu-bg);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+#ttdDownloadMenu[data-ttd-theme="dark"] {
+  --ttd-menu-bg:     #292929;
+  --ttd-menu-text:   #ffffff;
+  --ttd-menu-dim:    #adadad;
+  --ttd-menu-hover:  #3d3d3d;
+  --ttd-menu-border: #3d3d3d;
+  --ttd-menu-icon:   #9ea2ff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.ttd-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--ttd-menu-text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ttd-menu-item:hover,
+.ttd-menu-item:focus-visible {
+  background: var(--ttd-menu-hover);
+  outline: none;
+}
+
+.ttd-menu-icon {
+  display: inline-flex;
+}
+
+.ttd-menu-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--ttd-menu-icon);
+  stroke-width: 1.4;
+}
+
+.ttd-menu-hint {
+  margin-left: auto;
+  padding-left: 16px;
+  font-size: 12px;
+  color: var(--ttd-menu-dim);
+}
+
+.ttd-menu-separator {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--ttd-menu-border);
+}
+
+/* DRM warning dialog — shown when the manifest reveals encrypted segments. */
+#ttdDrmWarningOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--ttd-bg-backdrop-warning);
+  z-index: 1000000;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+#ttdDrmWarningOverlay.show { display: flex; }
+
+#ttdDrmWarningOverlay .ttd-drm-dialog {
+  background: var(--ttd-bg);
+  border: 3px solid var(--ttd-danger-strong);
+  border-radius: 14px;
+  max-width: 560px;
+  width: 100%;
+  padding: 28px 30px;
+  box-shadow: var(--ttd-shadow-overlay);
+  text-align: left;
+  font-family: inherit;
+}
+
+#ttdDrmWarningOverlay .ttd-drm-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+#ttdDrmWarningOverlay h2 {
+  margin: 0 0 12px;
+  color: var(--ttd-danger-strong);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+#ttdDrmWarningOverlay p {
+  margin: 0 0 12px;
+  color: var(--ttd-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+#ttdDrmWarningOverlay p strong { color: var(--ttd-text-strong); }
+
+#ttdDrmWarningOverlay .ttd-drm-actions {
+  margin-top: 18px;
+  text-align: right;
+}
+
+#ttdDrmWarningOverlay button {
+  background: var(--ttd-danger-strong);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#ttdDrmWarningOverlay button:hover { background: var(--ttd-danger-darker); }
+
+/* No-transcript warning dialog — shown when SharePoint reports no transcript,
+ * or when we can't determine whether a transcript exists. Warning (amber)
+ * tone rather than the DRM red to convey "fixable / informational" not "hard
+ * block". Shares overall layout with the DRM overlay above. */
+#ttdNoTranscriptOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--ttd-bg-backdrop-warning);
+  z-index: 1000000;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+#ttdNoTranscriptOverlay.show { display: flex; }
+
+#ttdNoTranscriptOverlay .ttd-info-dialog {
+  background: var(--ttd-bg);
+  border: 3px solid var(--ttd-warn-amber);
+  border-radius: 14px;
+  max-width: 560px;
+  width: 100%;
+  padding: 28px 30px;
+  box-shadow: var(--ttd-shadow-overlay);
+  text-align: left;
+  font-family: inherit;
+}
+
+#ttdNoTranscriptOverlay .ttd-info-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+#ttdNoTranscriptOverlay h2 {
+  margin: 0 0 12px;
+  color: var(--ttd-warn-amber-strong);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+#ttdNoTranscriptOverlay p {
+  margin: 0 0 12px;
+  color: var(--ttd-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+#ttdNoTranscriptOverlay p strong { color: var(--ttd-text-strong); }
+
+#ttdNoTranscriptOverlay .ttd-info-actions {
+  margin-top: 18px;
+  text-align: right;
+}
+
+#ttdNoTranscriptOverlay button {
+  background: var(--ttd-warn-amber);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#ttdNoTranscriptOverlay button:hover { background: var(--ttd-warn-amber-strong); }
+
+/* ============================================================================
+   Dark mode — follows the OS / browser preference.
+   Surfaces sink to a near-black with cool undertone; text lifts to warm
+   off-white. Brand gradients (purple, red, green) keep their hues — they're
+   colour-on-colour and read well on either surface. Code blocks deepen one
+   step below the modal surface for an "inset terminal" feel.
+   ============================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surfaces */
+    --ttd-bg:                  #1f1f23;
+    --ttd-bg-elevated:         #26262c;
+    --ttd-bg-input:            #16161a;
+    --ttd-bg-backdrop:         rgba(0, 0, 0, 0.78);
+    --ttd-bg-backdrop-warning: rgba(0, 0, 0, 0.84);
+    --ttd-bg-sample:           #16161a;
+    --ttd-bg-cancel:           #2a2a30;
+    --ttd-bg-cancel-hover:     #36363e;
+    --ttd-bg-format-hover:     #232636;
+    --ttd-bg-format-selected:  #1e2138;
+    --ttd-bg-video-hover:      #2a1f1f;
+    --ttd-bg-video-selected:   #2e1a1a;
+    --ttd-bg-tab:              #26262c;
+    --ttd-bg-tab-hover:        #32323a;
+    --ttd-bg-progress-track:   #34343a;
+    --ttd-bg-filename-error:   #3a1c1c;
+    --ttd-bg-star-hover:       #2a2a30;
+    --ttd-bg-info-warning:     #2e2616;
+    --ttd-bg-command-code:     #0e0e10;
+
+    /* Text */
+    --ttd-text:                #e4e4e8;
+    --ttd-text-strong:         #ffffff;
+    --ttd-text-muted:          #b0b0b8;
+    --ttd-text-dim:            #80808a;
+    --ttd-text-placeholder:    #5d5d65;
+    --ttd-text-status:         #a8a8b0;
+    --ttd-text-info-warning:   #e8d4a0;
+    --ttd-text-info-warn-str:  #ffb74d;
+    --ttd-text-command-code:   #d4d4d4;
+
+    /* Borders */
+    --ttd-border:              #2e2e34;
+    --ttd-border-strong:       #3a3a42;
+    --ttd-border-info-warning: #5a4a1c;
+    --ttd-border-info-accent:  #ffb74d;
+
+    /* Brand accents — gradients stay, accent-text brightens for contrast */
+    --ttd-accent-text:         #8d9eff;
+    --ttd-accent-shadow-tint:  rgba(141, 158, 255, 0.28);
+
+    /* Danger tint brightens slightly to read on dark video-card surfaces */
+    --ttd-danger-tint:         rgba(255, 107, 91, 0.28);
+
+    /* Shadows — deeper, since they sit on darker surfaces */
+    --ttd-shadow-modal:        0 14px 50px rgba(0, 0, 0, 0.6);
+    --ttd-shadow-overlay:      0 20px 70px rgba(0, 0, 0, 0.7);
+  }
+
+  /* The star badge from shields.io ships its own light-themed colours.
+     A gentle filter keeps it readable on dark without changing its glyphs. */
+  .modal-star-link .star-badge {
+    filter: brightness(0.9) contrast(1.05);
+  }
+}
