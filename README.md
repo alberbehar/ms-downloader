@@ -1,28 +1,51 @@
 # MS Downloader
 
-Chrome extension to download Microsoft Teams / SharePoint / Stream meeting recordings (video, audio) and transcripts — even when the built-in download button is disabled.
+Chrome / Edge extension that downloads Microsoft Teams, SharePoint and Stream recordings – video, audio and transcripts – that you can already watch, even when the download button is turned off.
 
-Works on `teams.microsoft.com`, `teams.cloud.microsoft` and `*.sharepoint.com` (including the Stream-on-SharePoint player).
+> **Version 2 – rewritten from scratch.**
 
 ## Features
-- Download **Video + audio (MP4)**, **Audio only (M4A)** or **Video only**, entirely in the browser
-- Download transcripts as **JSON**, **WebVTT** or **Grouped VTT** (with optional timestamps and speaker names)
-- Optional subtitles embedded in video downloads
+- A **Download** button on SharePoint / Stream recording pages and on recordings opened inside Teams
+- **Video + audio** (MP4), **Audio only** (M4A) or **Video only** (MP4), in the best quality the player offers
+- Downloads in the browser with parallel requests and automatic retry when Microsoft throttles
+- Handles AES-128 encrypted streams (keys the player itself receives); copy-protected (DRM) recordings are detected and refused
+- **Transcript** as readable text (.txt), WebVTT (.vtt), SubRip (.srt) or the original JSON, with optional speaker names and timestamps and a live preview
+- Remembers your last choices
+- Everything runs in your browser – nothing is sent anywhere else
 
-## Installation (load unpacked)
-1. Clone or download this repository.
-2. Open `chrome://extensions/` and turn on **Developer mode**.
-3. Click **Load unpacked** and select the `src/` folder.
+## Install (developer mode)
+1. Download this repository (**Code → Download ZIP**) and unzip it.
+2. Open `chrome://extensions` and turn on **Developer mode**.
+3. Click **Load unpacked** and choose the `extension` folder.
 
-## Usage
-Open a recording in Teams / SharePoint / Stream, click **Download** in the command bar and choose a format.
+## Use
+1. Open a meeting recording (Teams, SharePoint or Stream).
+2. Press play for a few seconds so the player loads the video.
+3. Click the blue **Download** button in the bottom-right corner and pick **Video + audio**, **Audio only**, **Video only** or **Transcript**.
+4. Press **Download** in the dialog. The file goes to your Downloads folder.
 
-## Notes
-- Only works for content you can already view; it does not bypass access restrictions or DRM.
-- All processing happens locally in the browser.
+## Limits
+- Only works for recordings you are allowed to view.
+- DRM-protected recordings cannot be saved.
+- Transcripts exist only if transcription was on during the meeting.
 
-## Credits & License
-Based on [ms-teams-sharepoint-downloader](https://github.com/brendangooden/ms-teams-sharepoint-downloader) by Brendan Gooden, released under the MIT License. See [LICENSE](LICENSE).
+## Project layout
+```
+extension/
+├── manifest.json      Manifest V3
+├── page-hook.js       Reads the file id, video manifest and tokens from the page
+├── panel.js           Button, menu, dialogs and downloads
+├── lib/dash.js        Reads the DASH manifest
+├── lib/mp4.js         Builds one seekable MP4 from the DASH pieces
+├── lib/transcript.js  Transcript → TXT / VTT / SRT
+├── popup.html/.js     Toolbar popup
+└── icons/
+```
 
 ## Website
-The project website lives in [`website/`](website/) (Astro). Run `npm install` and `npm run dev` inside it to preview, `npm run build` to build.
+https://alberbehar.github.io/ms-downloader/ – the page lives in [`site/`](site/).
+
+## License
+Copyright 2026 alberbehar. Licensed under the [Apache License 2.0](LICENSE).
+
+If you share or reuse this code, you must keep the [NOTICE](NOTICE) file and its credit to **alberbehar**.

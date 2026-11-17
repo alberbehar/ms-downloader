@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "MS Downloader",
+  "short_name": "MS Downloader",
+  "version": "2.1.0",
+  "description": "Download Microsoft Teams, SharePoint and Stream recordings (video, audio) and transcripts you can already watch.",
+  "author": "alberbehar",
+  "homepage_url": "https://alberbehar.github.io/ms-downloader/",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "MS Downloader",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.sharepoint.com/*",
+    "https://*.sharepoint.com.mcas.ms/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.sharepoint.com/*",
+        "https://*.sharepoint.com.mcas.ms/*"
+      ],
+      "js": [
+        "page-hook.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://*.sharepoint.com/*",
+        "https://*.sharepoint.com.mcas.ms/*"
+      ],
+      "js": [
+        "lib/transcript.js",
+        "lib/dash.js",
+        "lib/mp4.js",
+        "panel.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}
