@@ -42,5 +42,10 @@ extension/
 └── icons/
 ```
 
+## Website
+https://alberbehar.github.io/ms-downloader/ – the page lives in [`site/`](site/).
+
 ## License
-MIT © 2026 alberbehar
+Copyright 2026 alberbehar. Licensed under the [Apache License 2.0](LICENSE).
+
+If you share or reuse this code, you must keep the [NOTICE](NOTICE) file and its credit to **alberbehar**.

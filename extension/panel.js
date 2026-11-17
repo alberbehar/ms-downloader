@@ -1,3 +1,5 @@
+// MS Downloader — Copyright 2026 alberbehar
+// Licensed under the Apache License, Version 2.0. See LICENSE and NOTICE.
 // MS Downloader — on-page Download button, menu and dialogs.
 //
 // On SharePoint / Stream recording pages (including the recording frame inside

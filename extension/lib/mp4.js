@@ -1,3 +1,5 @@
+// MS Downloader — Copyright 2026 alberbehar
+// Licensed under the Apache License, Version 2.0. See LICENSE and NOTICE.
 // MS Downloader — turning DASH pieces into one ordinary MP4 file.
 //
 // DASH delivers each stream (video, audio) as fragmented MP4: an

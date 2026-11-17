@@ -1,3 +1,5 @@
+// MS Downloader — Copyright 2026 alberbehar
+// Licensed under the Apache License, Version 2.0. See LICENSE and NOTICE.
 // MS Downloader — page-world helper.
 //
 // Runs in the page's own JavaScript world so it can see two things the

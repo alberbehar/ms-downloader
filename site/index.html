@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MS Downloader – Teams, SharePoint ve Stream kayıtlarını indir</title>
+  <meta name="description" content="Teams, SharePoint ve Stream toplantı kayıtlarını video, ses veya transkript olarak indiren ücretsiz Chrome eklentisi. İndirme butonu kapalı olsa bile.">
+  <meta name="author" content="alberbehar">
+  <meta property="og:title" content="MS Downloader">
+  <meta property="og:description" content="Teams, SharePoint ve Stream kayıtlarını video, ses veya transkript olarak indir.">
+  <meta property="og:image" content="https://alberbehar.github.io/ms-downloader/img/video-dialog.webp">
+  <link rel="icon" href="img/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f8fc; --panel: #ffffff; --ink: #0b1020; --muted: #5b6478; --line: #e3e7f0;
+      --brand: #1d4ed8; --brand-2: #3b82f6; --brand-ink: #ffffff; --soft: #eef3ff;
+      --radius: 18px; --shadow: 0 30px 80px -30px rgba(29, 78, 216, .35);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0d16; --panel: #121726; --ink: #eef1f8; --muted: #9aa3b8; --line: #222a3d;
+        --soft: #16213d; --shadow: 0 30px 80px -30px rgba(0, 0, 0, .8);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 Manrope, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--brand-2); }
+    img { max-width: 100%; height: auto; display: block; }
+    .wrap { width: min(1120px, 100% - 40px); margin: 0 auto; }
+
+    /* nav */
+    nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(12px); background: color-mix(in srgb, var(--bg) 80%, transparent); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; gap: 24px; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; color: var(--ink); text-decoration: none; }
+    .logo img { width: 30px; height: 30px; border-radius: 8px; }
+    nav .links { display: flex; gap: 22px; margin-left: auto; font-size: 14px; font-weight: 600; }
+    nav .links a { color: var(--muted); text-decoration: none; }
+    nav .links a:hover { color: var(--ink); }
+    .lang { display: flex; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+    .lang button { border: 0; background: transparent; color: var(--muted); font: 700 12px Manrope, sans-serif; padding: 6px 10px; cursor: pointer; }
+    .lang button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+    @media (max-width: 760px) { nav .links { display: none; } .lang { margin-left: auto; } }
+
+    /* buttons */
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--panel); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: var(--brand-ink); border-color: transparent; box-shadow: 0 14px 30px -12px rgba(29, 78, 216, .7); }
+    .btn svg { width: 18px; height: 18px; }
+
+    /* hero */
+    .hero { padding: 72px 0 40px; text-align: center; }
+    .pill { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 99px; background: var(--soft); color: var(--brand-2); font-size: 13px; font-weight: 700; }
+    h1 { font-size: clamp(36px, 6vw, 64px); line-height: 1.05; letter-spacing: -.03em; margin: 20px auto 18px; max-width: 900px; font-weight: 800; }
+    h1 em { font-style: normal; background: linear-gradient(135deg, var(--brand), #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { font-size: 19px; color: var(--muted); max-width: 680px; margin: 0 auto; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+    .small { font-size: 13px; color: var(--muted); margin-top: 14px; }
+    .shot { margin: 56px auto 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); max-width: 1000px; }
+
+    /* sections */
+    section { padding: 72px 0; }
+    .eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--brand-2); }
+    h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -.02em; margin: 8px 0 14px; line-height: 1.15; }
+    .intro { color: var(--muted); max-width: 640px; margin: 0 0 36px; font-size: 17px; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+    .card .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--soft); color: var(--brand-2); margin-bottom: 14px; }
+    .card .ic svg { width: 22px; height: 22px; }
+    .card h3 { margin: 0 0 6px; font-size: 17px; }
+    .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tabs button { border: 1px solid var(--line); background: var(--panel); color: var(--muted); padding: 9px 16px; border-radius: 99px; font: 700 14px Manrope, sans-serif; cursor: pointer; }
+    .tabs button[aria-selected="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .gallery img { border-radius: var(--radius); border: 1px solid var(--line); box-shadow: var(--shadow); }
+
+    .steps { counter-reset: s; display: grid; gap: 14px; }
+    .step { counter-increment: s; display: grid; grid-template-columns: 48px 1fr; gap: 16px; align-items: start; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+    .step:before { content: counter(s); width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; }
+    .step h3 { margin: 6px 0 4px; font-size: 17px; }
+    .step p { margin: 0; color: var(--muted); }
+    code { background: var(--soft); padding: 2px 7px; border-radius: 6px; font-size: .92em; }
+
+    details { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; }
+    summary { font-weight: 700; cursor: pointer; }
+    details p { color: var(--muted); margin: 10px 0 2px; }
+
+    .final { text-align: center; background: linear-gradient(135deg, var(--brand), #2563eb 60%, #60a5fa); color: #fff; border-radius: 28px; padding: 56px 24px; }
+    .final h2 { color: #fff; }
+    .final p { color: rgba(255, 255, 255, .85); max-width: 560px; margin: 0 auto; }
+    .final .btn { background: #fff; color: var(--brand); border-color: #fff; margin-top: 26px; }
+
+    footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 28px; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap">
+      <a class="logo" href="#top"><img src="img/icon.png" alt="">MS Downloader</a>
+      <div class="links">
+        <a href="#features" data-i18n="nav_features">Özellikler</a>
+        <a href="#screens" data-i18n="nav_screens">Ekranlar</a>
+        <a href="#install" data-i18n="nav_install">Kurulum</a>
+        <a href="#faq" data-i18n="nav_faq">SSS</a>
+        <a href="https://github.com/alberbehar/ms-downloader" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="wrap">
+      <span class="pill" data-i18n="pill">Ücretsiz · Açık kaynak · Chrome &amp; Edge</span>
+      <h1 data-i18n-html="h1">Toplantı kayıtlarını <em>tek tıkla</em> indir.</h1>
+      <p class="lead" data-i18n="lead">Teams, SharePoint ve Stream kayıtlarını video, ses ya da transkript olarak kaydet. İndirme butonu kapalı olsa bile.</p>
+      <div class="cta">
+        <a class="btn primary js-install" href="MS-Downloader.zip" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+          <span data-i18n="cta_add">Chrome'a ekle</span>
+        </a>
+        <a class="btn" href="#install" data-i18n="cta_how">Nasıl kurulur?</a>
+      </div>
+      <p class="small" data-i18n="small">Sürüm <span class="js-version">2.1.0</span> · Hiçbir veri dışarı gönderilmez</p>
+      <div class="shot"><img src="img/video-dialog.webp" width="2360" height="1440" alt="MS Downloader dialog: choose Video + audio, Audio only or Video only"></div>
+    </div>
+  </header>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="feat_eyebrow">Özellikler</div>
+      <h2 data-i18n="feat_title">İhtiyacın olan her şey, tarayıcının içinde.</h2>
+      <p class="intro" data-i18n="feat_intro">Kaydı aç, sağ alttaki Download butonuna bas, ne istediğini seç. Gerisini eklenti halleder.</p>
+      <div class="grid">
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg></div><h3 data-i18n="f1_t">Video + ses</h3><p data-i18n="f1_d">Görüntü ve sesi tek bir MP4 dosyasında, oynatıcının sunduğu en yüksek kalitede.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3 data-i18n="f2_t">Sadece ses</h3><p data-i18n="f2_d">Küçük bir M4A dosyası. Yolda dinlemek ya da not almak için ideal.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3 data-i18n="f3_t">Transkript</h3><p data-i18n="f3_d">TXT, VTT, SRT veya JSON. Konuşmacı adları ve zaman damgaları isteğe bağlı, canlı önizlemeli.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></div><h3 data-i18n="f4_t">İleri-geri sarılabilir</h3><p data-i18n="f4_d">Çıkan dosya normal bir MP4. VLC, Windows Medya Oynatıcı ve QuickTime'da rahatça sarılır.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><h3 data-i18n="f5_t">Hızlı</h3><p data-i18n="f5_d">Parçaları paralel indirir. Microsoft yavaşlatırsa bekleyip otomatik yeniden dener.</p></div>
+        <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3 data-i18n="f6_t">Gizlilik önce</h3><p data-i18n="f6_d">Her şey senin tarayıcında olur. Sunucu yok, takip yok, reklam yok.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="scr_eyebrow">Ekranlar</div>
+      <h2 data-i18n="scr_title">Sade ve anlaşılır.</h2>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-shot="menu" data-i18n="tab_menu">Menü</button>
+        <button type="button" role="tab" aria-selected="false" data-shot="video-dialog" data-i18n="tab_video">Video indirme</button>
+        <button type="button" role="tab" aria-selected="false" data-shot="transcript-dialog" data-i18n="tab_text">Transkript</button>
+      </div>
+      <div class="gallery"><img id="shot" src="img/menu.webp" width="2360" height="1440" alt="MS Downloader screenshot"></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="ins_eyebrow">Kurulum</div>
+      <h2 data-i18n="ins_title">2 dakikada kur.</h2>
+      <p class="intro" data-i18n="ins_intro">Eklenti Chrome Web Store'a gelene kadar şu şekilde kurabilirsin:</p>
+      <div class="steps">
+        <div class="step"><div><h3 data-i18n="s1_t">ZIP'i indir ve aç</h3><p data-i18n-html="s1_d"><a class="js-install" href="MS-Downloader.zip" download>MS-Downloader.zip</a> dosyasını indir, sağ tıklayıp <b>Tümünü ayıkla</b> de. Bir <code>MS-Downloader</code> klasörü çıkacak.</p></div></div>
+        <div class="step"><div><h3 data-i18n="s2_t">Eklentiler sayfasını aç</h3><p data-i18n-html="s2_d">Adres çubuğuna <code>chrome://extensions</code> yaz (Edge'de <code>edge://extensions</code>) ve sağ üstten <b>Geliştirici modu</b>nu aç.</p></div></div>
+        <div class="step"><div><h3 data-i18n="s3_t">Klasörü yükle</h3><p data-i18n-html="s3_d"><b>Paketlenmemiş öğe yükle</b>'ye bas ve <code>MS-Downloader</code> klasörünü seç. Pencerede dosyalar görünmez, bu normal; sadece klasörü seç.</p></div></div>
+        <div class="step"><div><h3 data-i18n="s4_t">Kullan</h3><p data-i18n-html="s4_d">Bir kaydı aç, birkaç saniye oynat ve sağ alttaki mavi <b>Download</b> butonuna bas.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="faq_eyebrow">SSS</div>
+      <h2 data-i18n="faq_title">Sık sorulanlar</h2>
+      <details><summary data-i18n="q1">Ücretli mi?</summary><p data-i18n="a1">Hayır. Tamamen ücretsiz ve açık kaynak.</p></details>
+      <details><summary data-i18n="q2">Hangi kayıtlarda çalışır?</summary><p data-i18n="a2">*.sharepoint.com üzerindeki Stream / SharePoint kayıtlarında ve Teams içinde açılan kayıtlarda. Sadece zaten izleyebildiğin kayıtları indirir.</p></details>
+      <details><summary data-i18n="q3">Bazı videolar neden inmiyor?</summary><p data-i18n="a3">Microsoft bazı kayıtları DRM ile korur; bunlar sadece oynatılabilir, kaydedilemez. Eklenti bu durumu algılar ve sana söyler.</p></details>
+      <details><summary data-i18n="q4">Transkript neden yok?</summary><p data-i18n="a4">Transkript sadece toplantı sırasında transkripsiyon açıldıysa vardır.</p></details>
+      <details><summary data-i18n="q5">Verilerim bir yere gidiyor mu?</summary><p data-i18n="a5">Hayır. Eklenti sadece Microsoft'un zaten kullandığı adreslerle konuşur; her şey senin tarayıcında olur.</p></details>
+      <details><summary data-i18n="q6">Kodu kullanabilir miyim?</summary><p data-i18n="a6">Evet, Apache 2.0 lisansıyla. Paylaşırken NOTICE dosyasını ve alberbehar'ın adını korumak zorunludur.</p></details>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="final">
+        <h2 data-i18n="final_t">Kayıtların artık senin.</h2>
+        <p data-i18n="final_d">Ücretsiz indir, iki dakikada kur, toplantılarını istediğin yerde izle.</p>
+        <a class="btn js-install" href="MS-Downloader.zip" download data-i18n="cta_add">Chrome'a ekle</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 <b>alberbehar</b> · <span data-i18n="made">MS Downloader'ın yapımcısı</span></div>
+      <div><a href="https://github.com/alberbehar/ms-downloader" target="_blank" rel="noopener">GitHub</a> · <a href="https://github.com/alberbehar/ms-downloader/blob/main/LICENSE" target="_blank" rel="noopener">Apache 2.0</a> · <span data-i18n="tm">Microsoft, Teams, SharePoint ve Stream, Microsoft'un markalarıdır. Bu proje Microsoft ile bağlantılı değildir.</span></div>
+    </div>
+  </footer>
+
+  <script>
+    // When the extension is on the Chrome Web Store, put its address here and
+    // every "Add to Chrome" button will open the store page instead.
+    const STORE_URL = '';
+
+    const T = {
+      en: {
+        nav_features: 'Features', nav_screens: 'Screens', nav_install: 'Install', nav_faq: 'FAQ',
+        pill: 'Free · Open source · Chrome & Edge',
+        h1: 'Download meeting recordings <em>in one click</em>.',
+        lead: 'Save Teams, SharePoint and Stream recordings as video, audio or transcript – even when the download button is turned off.',
+        cta_add: 'Add to Chrome', cta_how: 'How to install',
+        small: 'Version <span class="js-version">2.1.0</span> · Nothing leaves your browser',
+        feat_eyebrow: 'Features', feat_title: 'Everything you need, right in your browser.',
+        feat_intro: 'Open a recording, press the Download button in the corner and pick what you want. The extension does the rest.',
+        f1_t: 'Video + audio', f1_d: 'Picture and sound in one MP4 file, in the best quality the player offers.',
+        f2_t: 'Audio only', f2_d: 'A small M4A file – great for listening on the go or taking notes.',
+        f3_t: 'Transcript', f3_d: 'TXT, VTT, SRT or JSON, with optional speaker names and timestamps and a live preview.',
+        f4_t: 'Seekable', f4_d: 'You get a regular MP4 that seeks smoothly in VLC, Windows Media Player and QuickTime.',
+        f5_t: 'Fast', f5_d: 'Downloads parts in parallel and retries automatically when Microsoft slows things down.',
+        f6_t: 'Privacy first', f6_d: 'Everything happens in your browser. No servers, no tracking, no ads.',
+        scr_eyebrow: 'Screens', scr_title: 'Simple and clear.', tab_menu: 'Menu', tab_video: 'Video download', tab_text: 'Transcript',
+        ins_eyebrow: 'Install', ins_title: 'Set up in 2 minutes.', ins_intro: 'Until the extension is on the Chrome Web Store, install it like this:',
+        s1_t: 'Download and unzip', s1_d: 'Download <a class="js-install" href="MS-Downloader.zip" download>MS-Downloader.zip</a>, right-click it and choose <b>Extract all</b>. You get an <code>MS-Downloader</code> folder.',
+        s2_t: 'Open the extensions page', s2_d: 'Type <code>chrome://extensions</code> in the address bar (<code>edge://extensions</code> in Edge) and turn on <b>Developer mode</b> at the top right.',
+        s3_t: 'Load the folder', s3_d: 'Click <b>Load unpacked</b> and choose the <code>MS-Downloader</code> folder. The picker shows no files – that is normal, just pick the folder.',
+        s4_t: 'Use it', s4_d: 'Open a recording, play it for a few seconds and press the blue <b>Download</b> button in the bottom-right corner.',
+        faq_eyebrow: 'FAQ', faq_title: 'Questions',
+        q1: 'Is it free?', a1: 'Yes. Completely free and open source.',
+        q2: 'Which recordings does it work on?', a2: 'Stream / SharePoint recordings on *.sharepoint.com and recordings opened inside Teams. It only downloads recordings you can already watch.',
+        q3: 'Why do some videos not download?', a3: 'Microsoft protects some recordings with DRM; those can be played but not saved. The extension detects this and tells you.',
+        q4: 'Why is there no transcript?', a4: 'A transcript only exists if transcription was on during the meeting.',
+        q5: 'Does my data go anywhere?', a5: 'No. The extension only talks to the Microsoft addresses the player already uses; everything happens in your browser.',
+        q6: 'Can I use the code?', a6: 'Yes, under the Apache 2.0 license. When you share it you must keep the NOTICE file and the credit to alberbehar.',
+        final_t: 'Your recordings, your files.', final_d: 'Download for free, set up in two minutes, watch your meetings anywhere.',
+        made: 'creator of MS Downloader',
+        tm: 'Microsoft, Teams, SharePoint and Stream are trademarks of Microsoft. This project is not affiliated with Microsoft.'
+      }
+    };
+    const original = {};
+    document.querySelectorAll('[data-i18n],[data-i18n-html]').forEach((el) => {
+      original[el.dataset.i18n || el.dataset.i18nHtml] = el.innerHTML;
+    });
+
+    function setLang(lang) {
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n],[data-i18n-html]').forEach((el) => {
+        const key = el.dataset.i18n || el.dataset.i18nHtml;
+        const text = lang === 'tr' ? original[key] : T.en[key];
+        if (text != null) el.innerHTML = text;
+      });
+      document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+      wireInstall();
+      try { localStorage.setItem('msdl-lang', lang); } catch (_) {}
+    }
+
+    function wireInstall() {
+      document.querySelectorAll('.js-install').forEach((a) => {
+        if (STORE_URL) {
+          a.href = STORE_URL; a.removeAttribute('download'); a.target = '_blank'; a.rel = 'noopener';
+        } else if (!a.dataset.wired) {
+          a.dataset.wired = '1';
+          // Download the ZIP and show the install steps.
+          a.addEventListener('click', () => setTimeout(() => location.hash = 'install', 300));
+        }
+      });
+    }
+
+    document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
+    document.querySelectorAll('[data-shot]').forEach((b) => b.addEventListener('click', () => {
+      document.getElementById('shot').src = 'img/' + b.dataset.shot + '.webp';
+      document.querySelectorAll('[data-shot]').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+    }));
+
+    let start = 'tr';
+    try { start = localStorage.getItem('msdl-lang') || (navigator.language.startsWith('tr') ? 'tr' : 'en'); } catch (_) {}
+    setLang(start);
+  </script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+// MS Downloader — Copyright 2026 alberbehar
+// Licensed under the Apache License, Version 2.0. See LICENSE and NOTICE.
 // MS Downloader — reading the player's DASH manifest (MPD).
 //
 // Produces, for each stream (video, audio or a combined one), the address of
