@@ -90,20 +90,39 @@
     });
   }
 
+  // Cookies only go to the page's own host. Microsoft's media CDN (*.svc.ms)
+  // rejects cross-site requests that carry credentials, and Chrome then
+  // blocks the response ("Failed to fetch").
+  function credsFor(url) {
+    try {
+      return new URL(url, location.href).origin === location.origin ? 'include' : 'omit';
+    } catch (_) {
+      return 'omit';
+    }
+  }
+
+  function hostOf(url) {
+    try { return new URL(url, location.href).hostname; } catch (_) { return '?'; }
+  }
+
   // fetch with retries for throttling (429) and temporary server errors.
   async function fetchRetry(url, init, signal, onWait) {
     let wait = 1000;
     for (let attempt = 1; ; attempt++) {
       let res = null;
       try {
-        res = await fetch(url, { ...init, signal });
+        res = await fetch(url, { ...init, credentials: credsFor(url), signal });
       } catch (e) {
         if (signal && signal.aborted) throw e;
-        if (attempt >= 6) throw e;
+        if (attempt >= 3) {
+          console.warn('[MS Downloader] request blocked or offline:', hostOf(url), e);
+          throw Object.assign(new Error(`could not reach ${hostOf(url)}`), { code: 'network', host: hostOf(url) });
+        }
       }
       if (res && res.ok) return res;
       if (res && ![408, 429, 500, 502, 503, 504].includes(res.status)) {
-        throw Object.assign(new Error(`server answered ${res.status}`), { status: res.status });
+        console.warn('[MS Downloader] HTTP', res.status, 'from', hostOf(url));
+        throw Object.assign(new Error(`${hostOf(url)} answered ${res.status}`), { status: res.status });
       }
       if (attempt >= 6) {
         throw Object.assign(new Error(`server answered ${res ? res.status : 'no response'}`), { status: res && res.status });
@@ -157,7 +176,7 @@
 
     const link = new URL(throughProxyIfNeeded(entry.temporaryDownloadUrl));
     link.searchParams.set('format', 'json');
-    const res = await fetch(link.href, { credentials: 'include' });
+    const res = await fetch(link.href, { credentials: credsFor(link.href) });
     if (!res.ok) throw new Error(`transcript download failed (${res.status})`);
     state.transcript = await res.json();
     state.transcriptKey = key;
@@ -223,7 +242,7 @@
       while (active < limit && queue.length) {
         const { task, resolve, reject } = queue.shift();
         active++;
-        task().then(resolve, reject).finally(() => { active--; next(); });
+        Promise.resolve().then(task).then(resolve, reject).finally(() => { active--; next(); });
       }
     };
     return {
@@ -608,7 +627,10 @@
       default: break;
     }
     if (e && (e.status === 401 || e.status === 403)) {
-      return 'Microsoft refused the request. Refresh the page, play the video for a few seconds and try again.';
+      return `Microsoft refused the request (${e.message}). Refresh the page, play the video for a few seconds and try again.`;
+    }
+    if (e && e.code === 'network') {
+      return `The browser could not reach ${e.host}. Refresh the page, play the video for a few seconds and try again.`;
     }
     return `Download failed: ${e && e.message ? e.message : e}. Refresh the page and try again.`;
   }
