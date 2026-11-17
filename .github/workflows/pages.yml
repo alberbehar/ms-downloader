@@ -1,4 +1,5 @@
 name: Deploy website to GitHub Pages
+# Builds website/ with GITHUB_PAGES=true and publishes it to https://alberbehar.github.io/ms-downloader/
 
 on:
   push:
