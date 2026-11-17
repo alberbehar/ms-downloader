@@ -3,7 +3,7 @@
   "name": "MS Downloader",
   "short_name": "MS Downloader",
   "version": "2.0.0",
-  "description": "Save transcripts from Microsoft Teams, SharePoint and Stream recordings you can already watch.",
+  "description": "Download Microsoft Teams, SharePoint and Stream recordings (video, audio) and transcripts you can already watch.",
   "author": "alberbehar",
   "homepage_url": "https://github.com/alberbehar/ms-downloader",
   "icons": {
@@ -47,6 +47,8 @@
       ],
       "js": [
         "lib/transcript.js",
+        "lib/dash.js",
+        "lib/mp4.js",
         "panel.js"
       ],
       "run_at": "document_idle",

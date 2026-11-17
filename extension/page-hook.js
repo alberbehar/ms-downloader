@@ -16,6 +16,7 @@
 
   let lastBearer = null;
   let lastItemKey = null;
+  let lastManifest = null;
 
   function send(kind, payload) {
     window.postMessage({ channel: CHANNEL, kind, payload }, window.location.origin);
@@ -27,6 +28,20 @@
     if (value === lastBearer) return;
     lastBearer = value;
     send('bearer', { value });
+  }
+
+  // The player asks for its DASH manifest at an address containing
+  // "videomanifest". The media CDN may also want the x-spopactoken header the
+  // player sends with it, so keep that too.
+  function rememberManifest(url, token) {
+    if (!url) return;
+    const text = String(url);
+    if (!/videomanifest/i.test(text) || /tempauth=/i.test(text)) return;
+    let href;
+    try { href = new URL(text, location.href).href; } catch (_) { return; }
+    if (lastManifest && lastManifest.url === href && (lastManifest.token || null) === (token || null)) return;
+    lastManifest = { url: href, token: token || (lastManifest && lastManifest.url === href ? lastManifest.token : null) };
+    send('manifest', lastManifest);
   }
 
   function headerFrom(headers, name) {
@@ -53,6 +68,9 @@
         const auth = headerFrom(init && init.headers, 'authorization') ||
           (input instanceof Request ? input.headers.get('authorization') : null);
         rememberBearer(url, auth);
+        const token = headerFrom(init && init.headers, 'x-spopactoken') ||
+          (input instanceof Request ? input.headers.get('x-spopactoken') : null);
+        rememberManifest(url, token);
       } catch (_) { /* never break the page */ }
       return realFetch.apply(this, arguments);
     };
@@ -64,11 +82,19 @@
   const realSetHeader = xhrProto.setRequestHeader;
   xhrProto.open = function (method, url) {
     this.__msdlUrl = url;
+    this.__msdlToken = null;
     return realOpen.apply(this, arguments);
+  };
+  const realSend = xhrProto.send;
+  xhrProto.send = function () {
+    try { rememberManifest(this.__msdlUrl, this.__msdlToken); } catch (_) { /* ignore */ }
+    return realSend.apply(this, arguments);
   };
   xhrProto.setRequestHeader = function (name, value) {
     try {
-      if (String(name).toLowerCase() === 'authorization') rememberBearer(this.__msdlUrl, value);
+      const lower = String(name).toLowerCase();
+      if (lower === 'authorization') rememberBearer(this.__msdlUrl, value);
+      else if (lower === 'x-spopactoken') this.__msdlToken = value;
     } catch (_) { /* ignore */ }
     return realSetHeader.apply(this, arguments);
   };
@@ -113,6 +139,7 @@
     lastItemKey = null;
     checkFileInfo();
     if (lastBearer) send('bearer', { value: lastBearer });
+    if (lastManifest) send('manifest', lastManifest);
   });
 
   setInterval(checkFileInfo, 1500);
