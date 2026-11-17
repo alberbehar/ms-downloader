@@ -36,7 +36,7 @@ extension/
 ├── page-hook.js       Reads the file id, video manifest and tokens from the page
 ├── panel.js           Button, menu, dialogs and downloads
 ├── lib/dash.js        Reads the DASH manifest
-├── lib/mp4.js         Joins video and audio into one MP4
+├── lib/mp4.js         Builds one seekable MP4 from the DASH pieces
 ├── lib/transcript.js  Transcript → TXT / VTT / SRT
 ├── popup.html/.js     Toolbar popup
 └── icons/

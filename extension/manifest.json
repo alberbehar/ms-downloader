@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MS Downloader",
   "short_name": "MS Downloader",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Download Microsoft Teams, SharePoint and Stream recordings (video, audio) and transcripts you can already watch.",
   "author": "alberbehar",
   "homepage_url": "https://github.com/alberbehar/ms-downloader",
